@@ -63,4 +63,14 @@ public class DBManager {
         return cursor;
     }
 
+    public int Delete(String selection, String[] selectionArgs) {
+        int count = sqlDatabase.delete(TableName, selection, selectionArgs);
+        return count;
+    }
+
+    public int Update(ContentValues values, String selection, String[] selectionArgs) {
+        int count = sqlDatabase.update(TableName, values, selection, selectionArgs);
+        return count;
+    }
+
 }

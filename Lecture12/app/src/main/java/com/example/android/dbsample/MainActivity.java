@@ -48,12 +48,24 @@ public class MainActivity extends AppCompatActivity {
         if (ID > 0) {
             Toast.makeText(this, "Data is added and user id: " + ID, Toast.LENGTH_LONG).show();
             ClearAll();
+            LoadElement();
         } else {
             Toast.makeText(this, "Cannot insert user", Toast.LENGTH_LONG).show();
         }
     }
 
     public void Update(View view) {
+        ContentValues values = new ContentValues();
+        values.put(DBManager.ColUsername, etUsername.getText().toString());
+        values.put(DBManager.ColPassword, etPassword.getText().toString());
+        values.put(DBManager.ColID, recordId);
+
+        String[] selectionArgs = {String.valueOf(recordId)};
+
+        dbManager.Update(values,"ID=?", selectionArgs);
+
+        ClearAll();
+        LoadElement();
     }
 
     public void Load(View view) {
@@ -65,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         listloginsData.clear();
 //        String[] projection = {"UserName", "Password"}; or null for all columns
         // Search
-        String[] selectionArgs = {"%" + etUsername.getText().toString() + "%"};
+        String[] selectionArgs = {"%" + etUsername.getText().toString() + "%", }; // 'jahanzeb'
         Cursor cursor = dbManager.getData(null, "Username like ?", selectionArgs, DBManager.ColUsername);
         if (cursor.moveToFirst()) {
             String tableData = "";
@@ -123,6 +135,28 @@ public class MainActivity extends AppCompatActivity {
 
             TextView tvPassword = (TextView)myView.findViewById(R.id.tvPassword);
             tvPassword.setText(s.Password);
+
+            Button btnDelete = (Button)myView.findViewById(R.id.btnDelete);
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String[] selectionArgs = {String.valueOf(s.ID)};
+                    int count = dbManager.Delete("ID=?", selectionArgs);
+                    if (count > 0) {
+                        LoadElement();
+                    }
+                }
+            });
+
+            Button btnUpdate = (Button)myView.findViewById(R.id.btnUpdate);
+            btnUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    etUsername.setText(s.Username);
+                    etPassword.setText(s.Password);
+                    recordId = s.ID;
+                }
+            });
 
             return myView;
         }
